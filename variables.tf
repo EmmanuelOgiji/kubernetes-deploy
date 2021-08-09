@@ -16,12 +16,6 @@ variable "secret_key" {
   default     = ""
 }
 
-variable "subnet_cidr_blocks" {
-  type        = list(string)
-  description = "List of cidr blocks for subnet creation. Used to give multiAZ resilience"
-  default     = ["10.0.0.0/24", "10.0.2.0/24", "10.0.3.0/24"]
-}
-
 variable "standard_tags" {
   default = {
     "Owner" : "Emmanuel Pius-Ogiji",

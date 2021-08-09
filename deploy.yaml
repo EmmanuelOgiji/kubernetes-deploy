@@ -19,8 +19,12 @@ spec:
         app: k8s-deploy
         owner: Emmanuel Pius-Ogiji
     spec:
+      securityContext:
+        runAsUser:
       containers:
       - image: nginx
         name: nginx
+        ports:
+          - containerPort: 80
         resources: {}
 status: {}
