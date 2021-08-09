@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: k8s-deploy
+    owner: Emmanuel Pius-Ogiji
+  name: k8s-deploy
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: k8s-deploy
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: k8s-deploy
+        owner: Emmanuel Pius-Ogiji
+    spec:
+      containers:
+      - image: nginx
+        name: nginx
+        resources: {}
+status: {}
