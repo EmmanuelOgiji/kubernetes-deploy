@@ -1,9 +1,14 @@
+locals {
+  cluster_name = "k8s-deployment"
+}
+
 resource "aws_eks_cluster" "deployment" {
-  name     = "k8s-deployment"
+  name     = local.cluster_name
   role_arn = aws_iam_role.eks_role.arn
 
   vpc_config {
-    subnet_ids = aws_subnet.main.*.id
+    subnet_ids         = aws_subnet.public.*.id
+    security_group_ids = [aws_security_group.eks_cluster.id, aws_security_group.eks_nodes.id]
   }
 
   tags = var.standard_tags
@@ -20,7 +25,7 @@ resource "aws_eks_node_group" "deployment_nodes" {
   cluster_name    = aws_eks_cluster.deployment.name
   node_group_name = "deployment_nodes"
   node_role_arn   = aws_iam_role.node_role.arn
-  subnet_ids      = aws_subnet.main.*.id
+  subnet_ids      = aws_subnet.private.*.id
   instance_types  = ["t2.micro"]
 
   scaling_config {
@@ -38,5 +43,6 @@ resource "aws_eks_node_group" "deployment_nodes" {
     aws_iam_role_policy_attachment.node_role-AmazonEKSWorkerNodePolicy,
     aws_iam_role_policy_attachment.node_role-AmazonEKS_CNI_Policy,
     aws_iam_role_policy_attachment.node_role-AmazonEC2ContainerRegistryReadOnly,
+    aws_iam_role_policy_attachment.node_role-cluster_autoscaler,
   ]
 }

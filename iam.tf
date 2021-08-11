@@ -63,3 +63,31 @@ resource "aws_iam_role_policy_attachment" "node_role-AmazonEC2ContainerRegistryR
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
   role       = aws_iam_role.node_role.name
 }
+
+resource "aws_iam_role_policy_attachment" "node_role-cluster_autoscaler" {
+  policy_arn = aws_iam_policy.cluster_autoscaler_policy.arn
+  role       = aws_iam_role.node_role.name
+}
+resource "aws_iam_policy" "cluster_autoscaler_policy" {
+  name        = "ClusterAutoScaler"
+  description = "Give the worker node running the Cluster Autoscaler access to required resources and actions"
+  policy      = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "autoscaling:DescribeAutoScalingGroups",
+                "autoscaling:DescribeAutoScalingInstances",
+                "autoscaling:DescribeLaunchConfigurations",
+                "autoscaling:DescribeTags",
+                "autoscaling:SetDesiredCapacity",
+                "autoscaling:TerminateInstanceInAutoScalingGroup"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+EOF
+}
