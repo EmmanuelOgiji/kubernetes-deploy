@@ -29,24 +29,27 @@ resource "aws_iam_role_policy_attachment" "eks_role-AmazonEKSVPCResourceControll
   role       = aws_iam_role.eks_role.name
 }
 
+resource "aws_iam_role_policy_attachment" "eks-AmazonEKSServicePolicy" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSServicePolicy"
+  role       = aws_iam_role.eks_role.name
+}
+
 resource "aws_iam_role" "node_role" {
   name                  = "eks-node-group-service_role"
   force_detach_policies = true
 
-  assume_role_policy = <<POLICY
-{
-  "Version": "2012-10-17",
-  "Statement": [
+  assume_role_policy = jsonencode(
     {
-      "Effect": "Allow",
-      "Principal": {
-        "Service":  "ec2.amazonaws.com"
-      },
-      "Action": "sts:AssumeRole"
-    }
-  ]
-}
-POLICY
+      Statement = [
+        {
+          Action = "sts:AssumeRole"
+          Effect = "Allow"
+          Principal = {
+            Service = "ec2.amazonaws.com"
+          }
+      }]
+      Version = "2012-10-17"
+  })
 }
 
 resource "aws_iam_role_policy_attachment" "node_role-AmazonEKSWorkerNodePolicy" {
@@ -68,6 +71,7 @@ resource "aws_iam_role_policy_attachment" "node_role-cluster_autoscaler" {
   policy_arn = aws_iam_policy.cluster_autoscaler_policy.arn
   role       = aws_iam_role.node_role.name
 }
+
 resource "aws_iam_policy" "cluster_autoscaler_policy" {
   name        = "ClusterAutoScaler"
   description = "Give the worker node running the Cluster Autoscaler access to required resources and actions"

@@ -7,9 +7,13 @@ resource "aws_eks_cluster" "deployment" {
   role_arn = aws_iam_role.eks_role.arn
 
   vpc_config {
-    subnet_ids         = aws_subnet.public.*.id
-    security_group_ids = [aws_security_group.eks_cluster.id, aws_security_group.eks_nodes.id]
+    security_group_ids      = [aws_security_group.eks_cluster.id]
+    endpoint_private_access = true
+    endpoint_public_access  = true
+    subnet_ids              = concat(aws_subnet.public.*.id, aws_subnet.private.*.id)
   }
+
+  enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
 
   tags = var.standard_tags
 
@@ -18,57 +22,62 @@ resource "aws_eks_cluster" "deployment" {
   depends_on = [
     aws_iam_role_policy_attachment.eks_role-AmazonEKSClusterPolicy,
     aws_iam_role_policy_attachment.eks_role-AmazonEKSVPCResourceController,
+    aws_iam_role_policy_attachment.eks-AmazonEKSServicePolicy
   ]
 }
 
-resource "aws_eks_node_group" "deployment_nodes" {
+resource "aws_eks_node_group" "private" {
   cluster_name    = aws_eks_cluster.deployment.name
-  node_group_name = "deployment_nodes"
+  node_group_name = "private-node-group-${local.cluster_name}"
   node_role_arn   = aws_iam_role.node_role.arn
   subnet_ids      = aws_subnet.private.*.id
-  instance_types  = ["t2.micro"]
+
+  labels = {
+    "type" = "private"
+  }
+
+  instance_types = ["t2.micro"]
 
   scaling_config {
     desired_size = 1
-    max_size     = 1
+    max_size     = 2
     min_size     = 1
   }
 
-  tags = var.standard_tags
-
-
-  # Ensure that IAM Role permissions are created before and deleted after EKS Node Group handling.
-  # Otherwise, EKS will not be able to properly delete EC2 Instances and Elastic Network Interfaces.
   depends_on = [
     aws_iam_role_policy_attachment.node_role-AmazonEKSWorkerNodePolicy,
     aws_iam_role_policy_attachment.node_role-AmazonEKS_CNI_Policy,
     aws_iam_role_policy_attachment.node_role-AmazonEC2ContainerRegistryReadOnly,
     aws_iam_role_policy_attachment.node_role-cluster_autoscaler,
   ]
+
+  tags = var.standard_tags
 }
 
-resource "aws_eks_node_group" "deployment_nodes_public" {
+resource "aws_eks_node_group" "public" {
   cluster_name    = aws_eks_cluster.deployment.name
-  node_group_name = "deployment_nodes_public"
+  node_group_name = "public-node-group-${local.cluster_name}"
   node_role_arn   = aws_iam_role.node_role.arn
   subnet_ids      = aws_subnet.public.*.id
-  instance_types  = ["t2.micro"]
+
+  labels = {
+    "type" = "public"
+  }
+
+  instance_types = ["t2.micro"]
 
   scaling_config {
     desired_size = 1
-    max_size     = 1
+    max_size     = 2
     min_size     = 1
   }
 
-  tags = var.standard_tags
-
-
-  # Ensure that IAM Role permissions are created before and deleted after EKS Node Group handling.
-  # Otherwise, EKS will not be able to properly delete EC2 Instances and Elastic Network Interfaces.
   depends_on = [
     aws_iam_role_policy_attachment.node_role-AmazonEKSWorkerNodePolicy,
     aws_iam_role_policy_attachment.node_role-AmazonEKS_CNI_Policy,
     aws_iam_role_policy_attachment.node_role-AmazonEC2ContainerRegistryReadOnly,
     aws_iam_role_policy_attachment.node_role-cluster_autoscaler,
   ]
+
+  tags = var.standard_tags
 }
