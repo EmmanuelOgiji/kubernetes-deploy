@@ -27,5 +27,5 @@ To run,
   - cd kubernetes-manifests
   - kubectl create -f .
 - To deploy prometheus into the cluster
-  - cd kubernetes-manifests
+  - cd kubernetes-manifests/config
   - bash deploy_prometheus.sh
