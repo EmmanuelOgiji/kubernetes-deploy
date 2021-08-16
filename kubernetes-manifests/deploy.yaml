@@ -19,11 +19,13 @@ spec:
         owner: EPO
         app: k8s-deploy
     spec:
+      securityContext:
+        runAsUser: 1000
       containers:
-      - image: nginx
+      - image: nginxinc/nginx-unprivileged
         name: nginx
         ports:
-          - containerPort: 80
+          - containerPort: 8080
         volumeMounts:
           - name: config-volume
             mountPath: /usr/share/nginx/html
