@@ -19,8 +19,6 @@ spec:
         owner: EPO
         app: k8s-deploy
     spec:
-      securityContext:
-        runAsUser: 1000
       containers:
       - image: nginx
         name: nginx

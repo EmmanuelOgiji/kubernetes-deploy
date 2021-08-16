@@ -1,9 +1,5 @@
-locals {
-  cluster_name = "k8s-deployment"
-}
-
 resource "aws_eks_cluster" "deployment" {
-  name     = local.cluster_name
+  name     = var.cluster_name
   role_arn = aws_iam_role.eks_role.arn
 
   vpc_config {
@@ -28,7 +24,7 @@ resource "aws_eks_cluster" "deployment" {
 
 resource "aws_eks_node_group" "private" {
   cluster_name    = aws_eks_cluster.deployment.name
-  node_group_name = "private-node-group-${local.cluster_name}"
+  node_group_name = "private-node-group-${var.cluster_name}"
   node_role_arn   = aws_iam_role.node_role.arn
   subnet_ids      = aws_subnet.private.*.id
 
@@ -36,7 +32,7 @@ resource "aws_eks_node_group" "private" {
     "type" = "private"
   }
 
-  instance_types = ["t2.micro"]
+  instance_types = var.instance_types
 
   scaling_config {
     desired_size = 1
@@ -56,7 +52,7 @@ resource "aws_eks_node_group" "private" {
 
 resource "aws_eks_node_group" "public" {
   cluster_name    = aws_eks_cluster.deployment.name
-  node_group_name = "public-node-group-${local.cluster_name}"
+  node_group_name = "public-node-group-${var.cluster_name}"
   node_role_arn   = aws_iam_role.node_role.arn
   subnet_ids      = aws_subnet.public.*.id
 
@@ -64,7 +60,7 @@ resource "aws_eks_node_group" "public" {
     "type" = "public"
   }
 
-  instance_types = ["t2.micro"]
+  instance_types = var.instance_types
 
   scaling_config {
     desired_size = 1

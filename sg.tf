@@ -1,5 +1,5 @@
 resource "aws_security_group" "eks_cluster" {
-  name        = "${local.cluster_name}/ControlPlaneSecurityGroup"
+  name        = "${var.cluster_name}/ControlPlaneSecurityGroup"
   description = "Communication between the control plane and worker nodegroups"
   vpc_id      = aws_vpc.main.id
 
@@ -11,7 +11,7 @@ resource "aws_security_group" "eks_cluster" {
   }
 
   tags = merge({
-    Name = "${local.cluster_name}/ControlPlaneSecurityGroup"
+    Name = "${var.cluster_name}/ControlPlaneSecurityGroup"
     }, var.standard_tags
   )
 }
@@ -28,7 +28,7 @@ resource "aws_security_group_rule" "cluster_inbound" {
 
 
 resource "aws_security_group" "eks_nodes" {
-  name        = "${local.cluster_name}/ClusterSharedNodeSecurityGroup"
+  name        = "${var.cluster_name}/ClusterSharedNodeSecurityGroup"
   description = "Communication between all nodes in the cluster"
   vpc_id      = aws_vpc.main.id
 
@@ -54,7 +54,7 @@ resource "aws_security_group" "eks_nodes" {
   }
 
   tags = merge({
-    Name = "${local.cluster_name}/ClusterSharedNodeSecurityGroup"
+    Name = "${var.cluster_name}/ClusterSharedNodeSecurityGroup"
     }, var.standard_tags
   )
 }

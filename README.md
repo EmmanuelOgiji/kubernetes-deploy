@@ -13,4 +13,5 @@ The problem should go as follows:
     - The deployment should be a simple nginx deployment exposed by a LoadBalancer service
     - The home html page should be mounted as a volume
     - Look to follow best practice progressively e.g. set security context, service account, network policy
-- Integrate ArgoCD, Prometheus into the cluster
+- Integrate Prometheus to the cluster
+- Look at using jsonnet/tanker to template the kubernetes manifests

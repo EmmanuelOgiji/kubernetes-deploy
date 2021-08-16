@@ -16,6 +16,18 @@ variable "secret_key" {
   default     = ""
 }
 
+variable "cluster_name" {
+  type        = string
+  description = "Name of the EKS cluster"
+  default     = "k8s-deploy"
+}
+
+variable "instance_types" {
+  type        = list(string)
+  description = "List of instance type to use in nodes"
+  default     = ["t2.medium"]
+}
+
 variable "private_subnet_cidr_blocks" {
   type        = list(string)
   description = "List of cidr blocks for subnet creation. Used to give multiAZ resilience"
