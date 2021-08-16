@@ -15,3 +15,17 @@ The problem should go as follows:
     - Look to follow best practice progressively e.g. set security context, service account, network policy
 - Integrate Prometheus to the cluster
 - Look at using jsonnet/tanker to template the kubernetes manifests
+
+# Solution
+To run,
+- Deploy EKS via Terraform:
+  - Setup vars either inline or using a .tfvars file
+  - terraform init
+  - terraform plan
+  - terraform apply
+- To deploy kubernetes resources
+  - cd kubernetes-manifests
+  - kubectl create -f .
+- To deploy prometheus into the cluster
+  - cd kubernetes-manifests
+  - bash deploy_prometheus.sh
