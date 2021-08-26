@@ -49,6 +49,7 @@ spec:
             path: /
             port: 8080
           initialDelaySeconds: 5
+          periodSeconds: 5
         resources:
           requests:
             memory: "64Mi"
