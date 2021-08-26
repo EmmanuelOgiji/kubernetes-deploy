@@ -11,7 +11,10 @@ spec:
   selector:
     matchLabels:
       owner: EPO
-  strategy: {}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
   template:
     metadata:
       creationTimestamp: null
@@ -22,6 +25,10 @@ spec:
       serviceAccountName: service-user
       securityContext:
         runAsUser: 1000
+      volumes:
+        - name: config-volume
+          configMap:
+            name: html-config
       containers:
       - image: nginxinc/nginx-unprivileged
         name: nginx
@@ -42,8 +49,11 @@ spec:
             path: /
             port: 8080
           initialDelaySeconds: 5
-      volumes:
-      - name: config-volume
-        configMap:
-           name: html-config
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
 status: {}
