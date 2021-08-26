@@ -31,15 +31,19 @@ This repository contains:
 
 
 # Solution
+Note: In the steps below $ denotes that what follows is a terminal command
 To run,
 - Deploy EKS via Terraform:
   - Setup vars either inline or using a .tfvars file
-  - terraform init
-  - terraform plan
-  - terraform apply
+  - $ terraform init
+  - $ terraform plan
+  - $ terraform apply
 - To deploy kubernetes resources
-  - cd kubernetes-manifests
-  - kubectl create -f .
+  - Connect local kubectl to the cluster
+    - Ensure your awscli is configured to access a role or user with sufficient permissions
+    - $ aws eks --region eu-west-1 update-kubeconfig --name k8s-deploy
+  - $ cd kubernetes-manifests
+  - $ kubectl create -f .
 - To deploy prometheus into the cluster
-  - cd kubernetes-manifests/config
-  - bash deploy_prometheus.sh
+  - $ cd kubernetes-manifests/config
+  - $ bash deploy_prometheus.sh
